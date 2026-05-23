@@ -1,11 +1,9 @@
---// Depth Dark UI Library V3
---// Roblox Lua / LocalScript safe UI library
+--// Night UI Library V4
+--// Roblox Lua UI Library
 
-local DepthUI = {}
+local NightUI = {}
 
---// Auto demo detection
---// Direct LocalScript = demo on
---// loadstring/GitHub usually = demo off
+--// Detect direct LocalScript vs loadstring
 local runningAsLocalScript = false
 
 pcall(function()
@@ -14,22 +12,18 @@ pcall(function()
 	end
 end)
 
-DepthUI.Config = {
-	Name = "Depth UI",
-
+NightUI.Config = {
+	Name = "Night UI",
 	KeySystem = true,
-
 	Key = "DepthKey123",
-
 	Keys = {
 		"DepthKey123",
 		"FreeAccess"
 	},
-
 	AutoDemo = runningAsLocalScript
 }
 
-function DepthUI:SetKeys(keys)
+function NightUI:SetKeys(keys)
 	if typeof(keys) == "string" then
 		self.Config.Key = keys
 		self.Config.Keys = { keys }
@@ -41,12 +35,12 @@ function DepthUI:SetKeys(keys)
 	return self
 end
 
-function DepthUI:SetKeySystem(enabled)
+function NightUI:SetKeySystem(enabled)
 	self.Config.KeySystem = enabled and true or false
 	return self
 end
 
-function DepthUI:SetConfig(config)
+function NightUI:SetConfig(config)
 	config = config or {}
 
 	if config.KeySystem ~= nil then
@@ -112,14 +106,18 @@ local function padding(px)
 		PaddingTop = UDim.new(0, px),
 		PaddingBottom = UDim.new(0, px),
 		PaddingLeft = UDim.new(0, px),
-		PaddingRight = UDim.new(0, px),
+		PaddingRight = UDim.new(0, px)
 	})
+end
+
+local function trimText(text)
+	return tostring(text):gsub("^%s+", ""):gsub("%s+$", "")
 end
 
 local function makeDraggable(frame, dragHandle)
 	local dragging = false
-	local dragStart
-	local startPos
+	local dragStart = nil
+	local startPos = nil
 
 	dragHandle.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -155,8 +153,12 @@ local function makeDraggable(frame, dragHandle)
 end
 
 local function checkKey(inputKey, keyList)
+	inputKey = trimText(inputKey)
+
 	for _, validKey in ipairs(keyList or {}) do
-		if tostring(inputKey) == tostring(validKey) then
+		validKey = trimText(validKey)
+
+		if inputKey == validKey then
 			return true
 		end
 	end
@@ -170,6 +172,7 @@ local function createAnimatedBackground(parent)
 		Size = UDim2.fromScale(1, 1),
 		BackgroundColor3 = Color3.fromRGB(2, 2, 5),
 		BorderSizePixel = 0,
+		ZIndex = 1,
 		Parent = parent
 	})
 
@@ -177,7 +180,7 @@ local function createAnimatedBackground(parent)
 		Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
 			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(13, 13, 20)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
 		}),
 		Rotation = 0,
 		Parent = background
@@ -206,6 +209,7 @@ local function createAnimatedBackground(parent)
 			BackgroundColor3 = Color3.fromRGB(35, 35, 50),
 			BackgroundTransparency = math.random(35, 75) / 100,
 			BorderSizePixel = 0,
+			ZIndex = 2,
 			Parent = background
 		}, {
 			corner(99)
@@ -230,7 +234,7 @@ local function createAnimatedBackground(parent)
 	return background
 end
 
-function DepthUI:CreateWindow(settings)
+function NightUI:CreateWindow(settings)
 	settings = settings or {}
 
 	local title = settings.Title or self.Config.Name
@@ -254,8 +258,14 @@ function DepthUI:CreateWindow(settings)
 		keys = { self.Config.Key }
 	end
 
+	local oldGui = PlayerGui:FindFirstChild("NightUILibrary")
+
+	if oldGui then
+		oldGui:Destroy()
+	end
+
 	local gui = create("ScreenGui", {
-		Name = "DepthDarkUILibrary",
+		Name = "NightUILibrary",
 		ResetOnSpawn = false,
 		IgnoreGuiInset = true,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
@@ -273,6 +283,7 @@ function DepthUI:CreateWindow(settings)
 		Font = Enum.Font.GothamBold,
 		AutoButtonColor = false,
 		Visible = false,
+		ZIndex = 100,
 		Parent = gui
 	}, {
 		corner(8),
@@ -286,6 +297,7 @@ function DepthUI:CreateWindow(settings)
 		BackgroundColor3 = Color3.fromRGB(8, 8, 12),
 		BorderSizePixel = 0,
 		Visible = not keySystem,
+		ZIndex = 20,
 		Parent = gui
 	}, {
 		corner(10),
@@ -302,7 +314,7 @@ function DepthUI:CreateWindow(settings)
 		ImageTransparency = 0.35,
 		ScaleType = Enum.ScaleType.Slice,
 		SliceCenter = Rect.new(10, 10, 118, 118),
-		ZIndex = 0,
+		ZIndex = 19,
 		Parent = main
 	})
 
@@ -311,7 +323,7 @@ function DepthUI:CreateWindow(settings)
 		Size = UDim2.new(1, 0, 0, 42),
 		BackgroundColor3 = Color3.fromRGB(12, 12, 18),
 		BorderSizePixel = 0,
-		ZIndex = 2,
+		ZIndex = 21,
 		Parent = main
 	}, {
 		corner(10)
@@ -327,7 +339,7 @@ function DepthUI:CreateWindow(settings)
 		TextSize = 15,
 		Font = Enum.Font.GothamBold,
 		TextXAlignment = Enum.TextXAlignment.Left,
-		ZIndex = 3,
+		ZIndex = 22,
 		Parent = topbar
 	})
 
@@ -341,7 +353,7 @@ function DepthUI:CreateWindow(settings)
 		TextSize = 18,
 		Font = Enum.Font.GothamBold,
 		AutoButtonColor = false,
-		ZIndex = 3,
+		ZIndex = 22,
 		Parent = topbar
 	}, {
 		corner(7)
@@ -365,6 +377,7 @@ function DepthUI:CreateWindow(settings)
 		Position = UDim2.fromOffset(10, 47),
 		BackgroundColor3 = Color3.fromRGB(10, 10, 15),
 		BorderSizePixel = 0,
+		ZIndex = 21,
 		Parent = main
 	}, {
 		corner(8),
@@ -384,6 +397,7 @@ function DepthUI:CreateWindow(settings)
 		Position = UDim2.fromOffset(130, 47),
 		BackgroundColor3 = Color3.fromRGB(10, 10, 15),
 		BorderSizePixel = 0,
+		ZIndex = 21,
 		Parent = main
 	}, {
 		corner(8),
@@ -392,7 +406,6 @@ function DepthUI:CreateWindow(settings)
 
 	local tabs = {}
 	local selectedTab = nil
-
 	local window = {}
 
 	function window:CreateTab(tabName)
@@ -407,6 +420,7 @@ function DepthUI:CreateWindow(settings)
 			TextSize = 13,
 			Font = Enum.Font.GothamMedium,
 			AutoButtonColor = false,
+			ZIndex = 22,
 			Parent = side
 		}, {
 			corner(7)
@@ -421,6 +435,7 @@ function DepthUI:CreateWindow(settings)
 			ScrollBarImageColor3 = Color3.fromRGB(70, 70, 90),
 			CanvasSize = UDim2.fromOffset(0, 0),
 			Visible = false,
+			ZIndex = 22,
 			Parent = content
 		}, {
 			padding(10)
@@ -458,6 +473,7 @@ function DepthUI:CreateWindow(settings)
 				Size = UDim2.new(1, -5, 0, height),
 				BackgroundColor3 = Color3.fromRGB(14, 14, 20),
 				BorderSizePixel = 0,
+				ZIndex = 23,
 				Parent = page
 			}, {
 				corner(8),
@@ -477,6 +493,7 @@ function DepthUI:CreateWindow(settings)
 				TextSize = 13,
 				Font = Enum.Font.Gotham,
 				TextXAlignment = Enum.TextXAlignment.Left,
+				ZIndex = 24,
 				Parent = holder
 			})
 
@@ -496,6 +513,7 @@ function DepthUI:CreateWindow(settings)
 				TextSize = 13,
 				Font = Enum.Font.GothamMedium,
 				AutoButtonColor = false,
+				ZIndex = 24,
 				Parent = holder
 			})
 
@@ -523,6 +541,7 @@ function DepthUI:CreateWindow(settings)
 				TextSize = 13,
 				Font = Enum.Font.GothamMedium,
 				TextXAlignment = Enum.TextXAlignment.Left,
+				ZIndex = 24,
 				Parent = holder
 			})
 
@@ -532,6 +551,7 @@ function DepthUI:CreateWindow(settings)
 				BackgroundColor3 = state and Color3.fromRGB(80, 120, 255) or Color3.fromRGB(35, 35, 45),
 				Text = "",
 				AutoButtonColor = false,
+				ZIndex = 24,
 				Parent = holder
 			}, {
 				corner(99)
@@ -542,6 +562,7 @@ function DepthUI:CreateWindow(settings)
 				Position = state and UDim2.fromOffset(22, 3) or UDim2.fromOffset(4, 3),
 				BackgroundColor3 = Color3.fromRGB(240, 240, 250),
 				BorderSizePixel = 0,
+				ZIndex = 25,
 				Parent = toggleBack
 			}, {
 				corner(99)
@@ -597,6 +618,7 @@ function DepthUI:CreateWindow(settings)
 				TextSize = 13,
 				Font = Enum.Font.GothamMedium,
 				TextXAlignment = Enum.TextXAlignment.Left,
+				ZIndex = 24,
 				Parent = holder
 			})
 
@@ -606,15 +628,17 @@ function DepthUI:CreateWindow(settings)
 				BackgroundColor3 = Color3.fromRGB(35, 35, 45),
 				Text = "",
 				AutoButtonColor = false,
+				ZIndex = 24,
 				Parent = holder
 			}, {
 				corner(99)
 			})
 
 			local fill = create("Frame", {
-				Size = UDim2.fromScale((value - min) / (max - min), 1),
+				Size = UDim2.fromScale((value - min) / math.max(max - min, 1), 1),
 				BackgroundColor3 = Color3.fromRGB(80, 120, 255),
 				BorderSizePixel = 0,
+				ZIndex = 25,
 				Parent = bar
 			}, {
 				corner(99)
@@ -662,7 +686,7 @@ function DepthUI:CreateWindow(settings)
 			return {
 				Set = function(_, newValue)
 					value = math.clamp(newValue, min, max)
-					local percent = (value - min) / (max - min)
+					local percent = (value - min) / math.max(max - min, 1)
 
 					label.Text = (options.Name or "Slider") .. ": " .. tostring(value)
 					fill.Size = UDim2.fromScale(percent, 1)
@@ -692,6 +716,7 @@ function DepthUI:CreateWindow(settings)
 				TextSize = 12,
 				Font = Enum.Font.Gotham,
 				TextXAlignment = Enum.TextXAlignment.Left,
+				ZIndex = 24,
 				Parent = holder
 			})
 
@@ -706,6 +731,7 @@ function DepthUI:CreateWindow(settings)
 				TextSize = 12,
 				Font = Enum.Font.Gotham,
 				ClearTextOnFocus = false,
+				ZIndex = 24,
 				Parent = holder
 			}, {
 				corner(6),
@@ -769,13 +795,14 @@ function DepthUI:CreateWindow(settings)
 			Position = UDim2.new(0.5, -165, 0.5, -90),
 			BackgroundColor3 = Color3.fromRGB(8, 8, 12),
 			BorderSizePixel = 0,
+			ZIndex = 50,
 			Parent = gui
 		}, {
 			corner(10),
 			stroke(Color3.fromRGB(45, 45, 60), 1, 0.15)
 		})
 
-		--// Key system UI is intentionally NOT draggable.
+		--// Key UI is intentionally not draggable.
 
 		create("TextLabel", {
 			Size = UDim2.new(1, -20, 0, 35),
@@ -785,6 +812,7 @@ function DepthUI:CreateWindow(settings)
 			TextColor3 = Color3.fromRGB(245, 245, 255),
 			TextSize = 18,
 			Font = Enum.Font.GothamBold,
+			ZIndex = 51,
 			Parent = keyFrame
 		})
 
@@ -799,6 +827,7 @@ function DepthUI:CreateWindow(settings)
 			TextSize = 13,
 			Font = Enum.Font.Gotham,
 			ClearTextOnFocus = false,
+			ZIndex = 51,
 			Parent = keyFrame
 		}, {
 			corner(7),
@@ -813,6 +842,7 @@ function DepthUI:CreateWindow(settings)
 			TextColor3 = Color3.fromRGB(255, 100, 100),
 			TextSize = 12,
 			Font = Enum.Font.Gotham,
+			ZIndex = 51,
 			Parent = keyFrame
 		})
 
@@ -825,23 +855,41 @@ function DepthUI:CreateWindow(settings)
 			TextSize = 13,
 			Font = Enum.Font.GothamBold,
 			AutoButtonColor = false,
+			ZIndex = 51,
 			Parent = keyFrame
 		}, {
 			corner(7)
 		})
 
+		local unlocked = false
+
 		local function unlock()
-			if checkKey(keyBox.Text, keys) then
+			if unlocked then
+				return
+			end
+
+			local typedKey = trimText(keyBox.Text)
+
+			if checkKey(typedKey, keys) then
+				unlocked = true
+
 				status.TextColor3 = Color3.fromRGB(100, 255, 150)
 				status.Text = "Correct key."
 
-				task.wait(0.15)
+				task.delay(0.15, function()
+					if keyFrame and keyFrame.Parent then
+						keyFrame.Visible = false
+						keyFrame:Destroy()
+					end
 
-				keyFrame:Destroy()
-				keyBackground:Destroy()
+					if keyBackground and keyBackground.Parent then
+						keyBackground.Visible = false
+						keyBackground:Destroy()
+					end
 
-				main.Visible = true
-				openButton.Visible = false
+					main.Visible = true
+					openButton.Visible = false
+				end)
 			else
 				status.TextColor3 = Color3.fromRGB(255, 100, 100)
 				status.Text = "Invalid key."
@@ -863,10 +911,10 @@ function DepthUI:CreateWindow(settings)
 	return window
 end
 
---// Auto demo only when pasted directly as a LocalScript
-if DepthUI.Config.AutoDemo then
-	local Window = DepthUI:CreateWindow({
-		Title = "Depth Demo",
+--// Auto demo only when pasted directly into a Roblox LocalScript
+if NightUI.Config.AutoDemo then
+	local Window = NightUI:CreateWindow({
+		Title = "Night Demo",
 		KeySystem = true,
 		Keys = {
 			"DepthKey123",
@@ -877,12 +925,12 @@ if DepthUI.Config.AutoDemo then
 	local Main = Window:CreateTab("Main")
 	local Settings = Window:CreateTab("Settings")
 
-	Main:CreateLabel("Welcome to Depth UI")
+	Main:CreateLabel("Welcome to Night UI")
 
 	Main:CreateButton({
 		Name = "Print Hello",
 		Callback = function()
-			print("Hello from Depth UI")
+			print("Hello from Night UI")
 		end
 	})
 
@@ -913,4 +961,4 @@ if DepthUI.Config.AutoDemo then
 	})
 end
 
-return DepthUI
+return NightUI
