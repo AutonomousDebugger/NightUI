@@ -1,5 +1,6 @@
---// Night UI Library V4
+--// Night UI Library V4.1
 --// Roblox Lua UI Library
+--// Removed outer transparent shadow
 
 local NightUI = {}
 
@@ -302,20 +303,6 @@ function NightUI:CreateWindow(settings)
 	}, {
 		corner(10),
 		stroke(Color3.fromRGB(42, 42, 55), 1, 0.15)
-	})
-
-	create("ImageLabel", {
-		Name = "Shadow",
-		Size = UDim2.new(1, 34, 1, 34),
-		Position = UDim2.fromOffset(-17, -17),
-		BackgroundTransparency = 1,
-		Image = "rbxassetid://1316045217",
-		ImageColor3 = Color3.fromRGB(0, 0, 0),
-		ImageTransparency = 0.35,
-		ScaleType = Enum.ScaleType.Slice,
-		SliceCenter = Rect.new(10, 10, 118, 118),
-		ZIndex = 19,
-		Parent = main
 	})
 
 	local topbar = create("Frame", {
