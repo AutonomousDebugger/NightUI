@@ -1,6 +1,6 @@
---// Night UI Library V4.1
+--// Night UI Library V4.2
 --// Roblox Lua UI Library
---// Removed outer transparent shadow
+--// Removed all transparent stroke/outline effects
 
 local NightUI = {}
 
@@ -91,14 +91,6 @@ end
 local function corner(radius)
 	return create("UICorner", {
 		CornerRadius = UDim.new(0, radius or 8)
-	})
-end
-
-local function stroke(color, thickness, transparency)
-	return create("UIStroke", {
-		Color = color or Color3.fromRGB(45, 45, 55),
-		Thickness = thickness or 1,
-		Transparency = transparency or 0
 	})
 end
 
@@ -287,8 +279,7 @@ function NightUI:CreateWindow(settings)
 		ZIndex = 100,
 		Parent = gui
 	}, {
-		corner(8),
-		stroke(Color3.fromRGB(55, 55, 75), 1, 0.2)
+		corner(8)
 	})
 
 	local main = create("Frame", {
@@ -301,8 +292,7 @@ function NightUI:CreateWindow(settings)
 		ZIndex = 20,
 		Parent = gui
 	}, {
-		corner(10),
-		stroke(Color3.fromRGB(42, 42, 55), 1, 0.15)
+		corner(10)
 	})
 
 	local topbar = create("Frame", {
@@ -368,7 +358,6 @@ function NightUI:CreateWindow(settings)
 		Parent = main
 	}, {
 		corner(8),
-		stroke(Color3.fromRGB(35, 35, 45), 1, 0.4),
 		padding(7)
 	})
 
@@ -387,8 +376,7 @@ function NightUI:CreateWindow(settings)
 		ZIndex = 21,
 		Parent = main
 	}, {
-		corner(8),
-		stroke(Color3.fromRGB(35, 35, 45), 1, 0.4)
+		corner(8)
 	})
 
 	local tabs = {}
@@ -463,8 +451,7 @@ function NightUI:CreateWindow(settings)
 				ZIndex = 23,
 				Parent = page
 			}, {
-				corner(8),
-				stroke(Color3.fromRGB(38, 38, 50), 1, 0.45)
+				corner(8)
 			})
 		end
 
@@ -721,8 +708,7 @@ function NightUI:CreateWindow(settings)
 				ZIndex = 24,
 				Parent = holder
 			}, {
-				corner(6),
-				stroke(Color3.fromRGB(35, 35, 45), 1, 0.5)
+				corner(6)
 			})
 
 			box.FocusLost:Connect(function(enterPressed)
@@ -785,11 +771,8 @@ function NightUI:CreateWindow(settings)
 			ZIndex = 50,
 			Parent = gui
 		}, {
-			corner(10),
-			stroke(Color3.fromRGB(45, 45, 60), 1, 0.15)
+			corner(10)
 		})
-
-		--// Key UI is intentionally not draggable.
 
 		create("TextLabel", {
 			Size = UDim2.new(1, -20, 0, 35),
@@ -817,8 +800,7 @@ function NightUI:CreateWindow(settings)
 			ZIndex = 51,
 			Parent = keyFrame
 		}, {
-			corner(7),
-			stroke(Color3.fromRGB(40, 40, 55), 1, 0.3)
+			corner(7)
 		})
 
 		local status = create("TextLabel", {
